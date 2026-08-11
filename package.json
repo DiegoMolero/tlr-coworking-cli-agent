@@ -11,7 +11,8 @@
     "tlr": "./dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "skill"
   ],
   "engines": {
     "node": ">=18"

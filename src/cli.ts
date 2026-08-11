@@ -6,6 +6,7 @@ import { whoamiCommand } from "./commands/whoami.js";
 import { desksListCommand } from "./commands/desks-list.js";
 import { bookCommand } from "./commands/book.js";
 import { bookingsListCommand, bookingsCancelCommand } from "./commands/bookings.js";
+import { skillInstallCommand } from "./commands/skill-install.js";
 
 const program = new Command();
 
@@ -66,5 +67,14 @@ bookings
   .description("Cancel one of your bookings")
   .option("--json", "output JSON")
   .action((bookingId, opts) => bookingsCancelCommand(bookingId, opts));
+
+const skill = program.command("skill").description("Manage the bundled AI agent skill (/carmen-plz)");
+skill
+  .command("install")
+  .description("Install the /carmen-plz skill for Claude Code (or compatible agents)")
+  .option("--project", "install into ./.claude/skills instead of ~/.claude/skills")
+  .option("--force", "overwrite an existing installation")
+  .option("--json", "output JSON")
+  .action((opts) => skillInstallCommand(opts));
 
 program.parseAsync(process.argv);

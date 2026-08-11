@@ -84,12 +84,34 @@ Times: `--start`/`--end` are combined with `--date` as UTC clock times (matching
 member portal's own calendar behaves for the Europe/Madrid office). Double check the created
 booking's actual time with `tlr bookings list` if unsure.
 
-## Using the Claude/Copilot skill
+## Using the Claude/Copilot skill (`/carmen-plz`)
 
-See [`skill/README.md`](./skill/README.md) for how to install it, and
-[`skill/SKILL.md`](./skill/SKILL.md) for exactly what instructions it gives the agent. In short:
-install the `tlr` CLI and log in yourself first, then copy `skill/` into your agent's skills
-directory so you can ask things like "book me a desk at TLR Coworking tomorrow 9 to 13".
+Once the CLI is installed (see above) and you're logged in (`tlr login`), install the bundled
+`/carmen-plz` skill for Claude Code with one command:
+
+```bash
+tlr skill install
+```
+
+This copies the skill into `~/.claude/skills/carmen-plz` (use `--project` to install it only for
+the current project, or `--force` to overwrite an existing copy). Restart Claude Code and either
+invoke it directly with `/carmen-plz` or just ask naturally, e.g. "book me a desk at TLR
+Coworking tomorrow 9 to 13" — Claude loads the skill automatically when relevant.
+
+Prefer not to clone the repo first? You can install the CLI **and** the skill in one shot with
+`npx`:
+
+```bash
+npx github:DiegoMolero/tlr-coworking-cli-agent skill install
+```
+
+This fetches the repo into npx's cache and runs `tlr skill install` from there — it does not
+install `tlr` itself globally, so you'll still want to follow the "Install" steps above once to
+get the `tlr` command on your `PATH` for the skill to actually call.
+
+See [`skill/README.md`](./skill/README.md) for details and
+[`skill/carmen-plz/SKILL.md`](./skill/carmen-plz/SKILL.md) for the exact instructions given to
+the agent.
 
 ## Status
 

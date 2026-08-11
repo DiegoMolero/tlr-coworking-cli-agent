@@ -1,14 +1,14 @@
 ---
-name: tlr-coworking-booking
-description: Book, check availability for, list, or cancel desk/room reservations at TLR Coworking (Malaga) using the installed `tlr` CLI. Use this whenever the user asks to reserve/book a desk or table at TLR Coworking, check desk availability there, see their upcoming bookings, or cancel a booking.
+name: carmen-plz
+description: Book, check availability for, list, or cancel desk/room reservations at TLR Coworking (Malaga) using the installed `tlr` CLI. Use this whenever the user asks to reserve/book a desk or table at TLR Coworking, check desk availability there, see their upcoming bookings, or cancel a booking. Invoke directly with /carmen-plz.
 ---
 
 # TLR Coworking booking skill
 
 This skill lets you book desks/rooms at **TLR Coworking (Málaga)** on behalf of the user, by
 calling the `tlr` command line tool that must already be installed and logged in on the user's
-machine (see the [main README](../README.md) for install instructions: clone the repo and run
-`npm install -g .`, then `tlr login`). This
+machine (see the [main README](../../README.md) for install instructions: clone the repo and run
+`npm install && npm install -g .`, then `tlr login`). This
 skill never talks to the TLR Coworking API directly — it only shells out to `tlr` and parses its
 JSON output.
 
