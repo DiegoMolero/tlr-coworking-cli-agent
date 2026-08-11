@@ -71,6 +71,27 @@ export async function login(username: string, password: string): Promise<LoginRe
   };
 }
 
+/** Best-effort extraction of a human-readable reason from an API error body. */
+function extractErrorMessage(body: unknown): string | undefined {
+  if (!body || typeof body !== "object") return undefined;
+  const b = body as Record<string, unknown>;
+
+  if (typeof b.message === "string" && b.message.trim()) return b.message;
+  if (typeof b.error === "string" && b.error.trim()) return b.error;
+
+  // OfficeRnD Flex often returns { errors: [{ message }] } or { errors: [{ msg }] }.
+  if (Array.isArray(b.errors) && b.errors.length > 0) {
+    const parts = b.errors
+      .map((e) => (typeof e === "string" ? e : (e as Record<string, unknown>)?.message ?? (e as Record<string, unknown>)?.msg))
+      .filter((m): m is string => typeof m === "string" && m.trim().length > 0);
+    if (parts.length > 0) return parts.join("; ");
+  }
+
+  if (typeof b.name === "string" && b.name.trim() && b.name !== "Error") return b.name;
+
+  return undefined;
+}
+
 function requireSession(): StoredSession {
   const session = loadSession();
   if (!session) {
@@ -95,7 +116,11 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   }
   if (!res.ok) {
     const body = await res.json().catch(() => undefined);
-    throw new ApiError(`Request to ${path} failed`, res.status, body);
+    const reason = extractErrorMessage(body);
+    const message = reason
+      ? `Request to ${path} failed (${res.status}): ${reason}`
+      : `Request to ${path} failed (${res.status})`;
+    throw new ApiError(message, res.status, body);
   }
   return res;
 }
