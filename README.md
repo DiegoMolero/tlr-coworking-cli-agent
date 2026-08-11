@@ -27,8 +27,10 @@ Install straight from GitHub with npm (no publishing to the npm registry needed)
 npm install -g github:DiegoMolero/tlr-coworking-cli-agent
 ```
 
-This clones the repo, installs dependencies, compiles the TypeScript (`prepare` script), and
-links the `tlr` command globally.
+This clones the repo and links the pre-built `tlr` command globally (the compiled `dist/` folder
+is committed to this repo specifically so a git-based install works without needing to run a
+build step, since `npm`'s `prepare` lifecycle for git dependencies is unreliable for TypeScript
+toolchains).
 
 Then log in and try it out:
 
@@ -94,3 +96,8 @@ No personal data (emails, passwords, session cookies, member/organization IDs be
 ones already used in this repo) should ever be committed. Tests use mocked HTTP responses with
 fake/anonymized fixtures — no real credentials are required to run the test suite. See
 [SECURITY.md](./SECURITY.md) for more details.
+
+**Important**: the compiled `dist/` folder is committed to this repository on purpose, so that
+`npm install -g github:DiegoMolero/tlr-coworking-cli-agent` works without a build step. If you
+change anything under `src/`, run `npm run build` and commit the updated `dist/` output together
+with your source change.
