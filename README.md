@@ -1,2 +1,96 @@
-# tlr-coworking-cli-agent
-CLI to be able to book tables in TLR coworking Malaga
+# tlr-coworking-cli
+
+Unofficial, community CLI + Claude/Copilot skill to book desks and rooms at
+**TLR Coworking (Málaga)** through its member portal at
+`https://family.tlr-coworking.com`, without opening a browser.
+
+> ⚠️ **Disclaimer**: this project is **not affiliated with, endorsed by, or supported by**
+> TLR Coworking or OfficeRnD. It was built by reverse-engineering the network traffic of the
+> member portal (which runs on the OfficeRnD Flex platform). The API is undocumented and can
+> change or break at any time without notice. Use it with **your own account**, at your own
+> risk, and in line with TLR Coworking's terms of service.
+
+## What's in this repo
+
+- **The `tlr` CLI** (this package, at the repo root) — install it directly from GitHub, no npm
+  registry required.
+- **[`skill/`](./skill)** — a Claude/Copilot Skill that teaches an AI agent to use the installed
+  `tlr` CLI (via its `--json` output) to check availability, book, list and cancel desks/rooms
+  on your behalf, conversationally. If the CLI isn't installed yet, the skill will tell the agent
+  to prompt you to install it (it will never install it or handle your password for you).
+
+## Install the CLI
+
+Install straight from GitHub with npm (no publishing to the npm registry needed):
+
+```bash
+npm install -g github:DiegoMolero/tlr-coworking-cli-agent
+```
+
+This clones the repo, installs dependencies, compiles the TypeScript (`prepare` script), and
+links the `tlr` command globally.
+
+Then log in and try it out:
+
+```bash
+tlr login
+tlr desks list
+tlr book "Hot Desk 02" --date 2026-08-20 --start 07:00 --end 11:00
+```
+
+### Local development (instead of a global install)
+
+```bash
+git clone https://github.com/DiegoMolero/tlr-coworking-cli-agent.git
+cd tlr-coworking-cli-agent
+npm install
+npm run build
+node dist/cli.js login
+npm test
+```
+
+## How authentication works
+
+The member portal uses a classic server-side session (an Express `connect.sid` cookie), not a
+bearer token/JWT. `tlr login` prompts for your email and password interactively (nothing is
+echoed to the terminal or kept in shell history), sends them once to TLR Coworking's login
+endpoint, and then stores **only the resulting session cookie** — never your password — securely
+in your OS keychain (see [SECURITY.md](./SECURITY.md)).
+
+## Commands (v1)
+
+| Command | Description |
+|---|---|
+| `tlr login` | Interactive login, stores the session locally |
+| `tlr logout` | Clears the locally stored session |
+| `tlr whoami` | Shows the currently logged-in user |
+| `tlr desks list [--date] [--type]` | Lists bookable desks/rooms for a date |
+| `tlr book <name-or-id> --date --start --end [--title]` | Books a desk/room |
+| `tlr bookings list` | Lists your upcoming bookings |
+| `tlr bookings cancel <id>` | Cancels one of your bookings |
+
+Add `--json` to any command for machine-readable output (used by the Skill).
+
+Times: `--start`/`--end` are combined with `--date` as UTC clock times (matching how the
+member portal's own calendar behaves for the Europe/Madrid office). Double check the created
+booking's actual time with `tlr bookings list` if unsure.
+
+## Using the Claude/Copilot skill
+
+See [`skill/README.md`](./skill/README.md) for how to install it, and
+[`skill/SKILL.md`](./skill/SKILL.md) for exactly what instructions it gives the agent. In short:
+install the `tlr` CLI and log in yourself first, then copy `skill/` into your agent's skills
+directory so you can ask things like "book me a desk at TLR Coworking tomorrow 9 to 13".
+
+## Status
+
+All v1 commands (`login`, `logout`, `whoami`, `desks list`, `book`, `bookings list`,
+`bookings cancel`) have been implemented and manually verified end-to-end against the real
+TLR Coworking member portal.
+
+## Contributing
+
+No personal data (emails, passwords, session cookies, member/organization IDs beyond the public
+ones already used in this repo) should ever be committed. Tests use mocked HTTP responses with
+fake/anonymized fixtures — no real credentials are required to run the test suite. See
+[SECURITY.md](./SECURITY.md) for more details.

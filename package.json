@@ -1,0 +1,47 @@
+{
+  "name": "tlr-coworking-cli",
+  "version": "0.1.0",
+  "description": "Unofficial CLI to book desks/rooms at TLR Coworking (Malaga) via its member portal.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DiegoMolero/tlr-coworking-cli-agent.git"
+  },
+  "bin": {
+    "tlr": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "test": "node --import tsx --test src/**/*.test.ts",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "cli",
+    "coworking",
+    "tlr-coworking",
+    "officernd",
+    "booking"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@napi-rs/keyring": "^1.3.0",
+    "commander": "^12.1.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/prompts": "^2.4.9",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}
