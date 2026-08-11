@@ -11,6 +11,13 @@ export interface LoginResult {
     displayName?: string;
     email?: string;
     memberId?: string;
+    /** Diagnostic info about the session cookie's lifetime, never includes the cookie's value. */
+    cookieMeta: CookieMeta;
+}
+export interface CookieMeta {
+    maxAgeSeconds?: number;
+    expires?: string;
+    hasExplicitExpiry: boolean;
 }
 export declare function login(username: string, password: string): Promise<LoginResult>;
 /** Performs an authenticated request against the TLR Coworking member portal API. */

@@ -26,6 +26,24 @@ function extractSessionCookie(setCookieHeaders) {
     }
     return null;
 }
+/**
+ * Parses cookie attributes (Max-Age/Expires) for diagnostics, without ever touching the
+ * cookie's actual value. Used to figure out whether/when a stored session will expire.
+ */
+function extractCookieMeta(setCookieHeaders) {
+    for (const header of setCookieHeaders) {
+        if (!/connect\.sid=/.test(header))
+            continue;
+        const maxAgeMatch = header.match(/Max-Age=(\d+)/i);
+        const expiresMatch = header.match(/Expires=([^;]+)/i);
+        return {
+            maxAgeSeconds: maxAgeMatch ? Number(maxAgeMatch[1]) : undefined,
+            expires: expiresMatch ? expiresMatch[1].trim() : undefined,
+            hasExplicitExpiry: Boolean(maxAgeMatch || expiresMatch),
+        };
+    }
+    return { hasExplicitExpiry: false };
+}
 export async function login(username, password) {
     const res = await fetch(apiPath("/signin"), {
         method: "POST",
@@ -46,6 +64,7 @@ export async function login(username, password) {
         displayName: body?.user?.displayName,
         email: body?.user?.emails?.[0],
         memberId: body?.perm?.contact,
+        cookieMeta: extractCookieMeta(setCookie),
     };
 }
 /** Best-effort extraction of a human-readable reason from an API error body. */

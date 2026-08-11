@@ -14,18 +14,34 @@ export async function loginCommand(opts) {
     }
     try {
         const result = await apiLogin(answers.username, answers.password);
+        const savedAt = new Date().toISOString();
+        const expiresAt = result.cookieMeta.maxAgeSeconds
+            ? new Date(Date.now() + result.cookieMeta.maxAgeSeconds * 1000).toISOString()
+            : result.cookieMeta.expires
+                ? new Date(result.cookieMeta.expires).toISOString()
+                : undefined;
         saveSession({
             cookie: result.cookie,
             displayName: result.displayName,
             email: result.email,
             memberId: result.memberId,
-            savedAt: new Date().toISOString(),
+            savedAt,
+            expiresAt,
+            hasExplicitExpiry: result.cookieMeta.hasExplicitExpiry,
         });
         if (opts.json) {
-            console.log(JSON.stringify({ ok: true, displayName: result.displayName }, null, 2));
+            console.log(JSON.stringify({ ok: true, displayName: result.displayName, expiresAt, hasExplicitExpiry: result.cookieMeta.hasExplicitExpiry }, null, 2));
         }
         else {
             console.log(`Logged in as ${result.displayName ?? result.email ?? "unknown user"}.`);
+            if (expiresAt) {
+                console.log(`Session valid until: ${expiresAt}`);
+            }
+            else {
+                console.log("The server did not set an explicit session expiry (no Max-Age/Expires on the cookie). " +
+                    "It's likely a rolling/idle-timeout session on the server side, so using the CLI " +
+                    "regularly should keep it alive; if it stops working, just run \"tlr login\" again.");
+            }
         }
     }
     catch (err) {

@@ -24,6 +24,14 @@ export interface LoginResult {
   displayName?: string;
   email?: string;
   memberId?: string;
+  /** Diagnostic info about the session cookie's lifetime, never includes the cookie's value. */
+  cookieMeta: CookieMeta;
+}
+
+export interface CookieMeta {
+  maxAgeSeconds?: number;
+  expires?: string;
+  hasExplicitExpiry: boolean;
 }
 
 /** Extracts the connect.sid cookie pair from a Set-Cookie response header. */
@@ -35,6 +43,24 @@ function extractSessionCookie(setCookieHeaders: string[]): string | null {
     }
   }
   return null;
+}
+
+/**
+ * Parses cookie attributes (Max-Age/Expires) for diagnostics, without ever touching the
+ * cookie's actual value. Used to figure out whether/when a stored session will expire.
+ */
+function extractCookieMeta(setCookieHeaders: string[]): CookieMeta {
+  for (const header of setCookieHeaders) {
+    if (!/connect\.sid=/.test(header)) continue;
+    const maxAgeMatch = header.match(/Max-Age=(\d+)/i);
+    const expiresMatch = header.match(/Expires=([^;]+)/i);
+    return {
+      maxAgeSeconds: maxAgeMatch ? Number(maxAgeMatch[1]) : undefined,
+      expires: expiresMatch ? expiresMatch[1].trim() : undefined,
+      hasExplicitExpiry: Boolean(maxAgeMatch || expiresMatch),
+    };
+  }
+  return { hasExplicitExpiry: false };
 }
 
 export async function login(username: string, password: string): Promise<LoginResult> {
@@ -68,6 +94,7 @@ export async function login(username: string, password: string): Promise<LoginRe
     displayName: body?.user?.displayName,
     email: body?.user?.emails?.[0],
     memberId: body?.perm?.contact,
+    cookieMeta: extractCookieMeta(setCookie),
   };
 }
 
