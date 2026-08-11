@@ -62,12 +62,12 @@ tlr book "<desk name or id>" --date YYYY-MM-DD --start HH:mm --end HH:mm --title
 
 - Always confirm date, start/end time, and which desk with the user before running this command
   — it creates a real reservation.
-- `--start`/`--end` are UTC clock times combined with `--date` (matching the office's own
-  calendar behavior for Europe/Madrid). If the user gives you a local time, convert it to what
-  the portal expects the same way `tlr desks list` shows availability, or simply pass through
-  what the user says and tell them to double check with `tlr bookings list` afterwards.
+- `--start`/`--end` are `HH:mm` in **Europe/Madrid local time** — pass through exactly what the
+  user says in local time (the CLI itself converts to the correct UTC instant, including
+  daylight saving time). Do not attempt to convert time zones yourself.
 - On success, the JSON output includes the created booking's `_id` and `reference` — report the
-  `reference` back to the user as their booking confirmation.
+  `reference` back to the user as their booking confirmation. Recommend double-checking with
+  `tlr bookings list --json` if the user seems unsure.
 
 ## Listing bookings
 

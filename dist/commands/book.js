@@ -2,10 +2,12 @@ import { apiJson, NotAuthenticatedError } from "../lib/api-client.js";
 import { config } from "../lib/config.js";
 import { loadSession } from "../lib/auth-store.js";
 import { printError } from "../lib/format.js";
+import { zonedTimeToUtcIso } from "../lib/tz.js";
 import { fetchBookableResources } from "./desks-list.js";
 function toIsoDateTime(date, time) {
-    // Interprets date+time as Europe/Madrid local time, sent with the timezone field to the API.
-    return `${date}T${time}:00.000Z`;
+    // Interprets date+time as Europe/Madrid local (wall-clock) time and converts it to the real
+    // UTC instant the API expects, correctly accounting for daylight saving time.
+    return zonedTimeToUtcIso(date, time, config.timezone);
 }
 async function resolveResourceId(nameOrId, opts) {
     const resources = await fetchBookableResources(opts);

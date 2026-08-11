@@ -80,9 +80,9 @@ in your OS keychain (see [SECURITY.md](./SECURITY.md)).
 
 Add `--json` to any command for machine-readable output (used by the Skill).
 
-Times: `--start`/`--end` are combined with `--date` as UTC clock times (matching how the
-member portal's own calendar behaves for the Europe/Madrid office). Double check the created
-booking's actual time with `tlr bookings list` if unsure.
+Times: `--start`/`--end` are `HH:mm` in **Europe/Madrid local time** (the CLI converts them to the
+correct UTC instant, accounting for daylight saving time, before sending to the API). Double
+check the created booking's actual time with `tlr bookings list` if unsure.
 
 ## Using the Claude/Copilot skill (`/carmen-plz`)
 
