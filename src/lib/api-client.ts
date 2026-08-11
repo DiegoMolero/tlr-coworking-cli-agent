@@ -1,5 +1,5 @@
 import { apiPath } from "./config.js";
-import { loadSession, type StoredSession } from "./auth-store.js";
+import { loadSession, saveSession, type StoredSession } from "./auth-store.js";
 
 export class ApiError extends Error {
   constructor(
@@ -61,6 +61,17 @@ function extractCookieMeta(setCookieHeaders: string[]): CookieMeta {
     };
   }
   return { hasExplicitExpiry: false };
+}
+
+/** Computes an absolute ISO expiry timestamp from a login/refresh response's cookie attributes. */
+export function computeExpiresAt(meta: CookieMeta): string | undefined {
+  if (meta.maxAgeSeconds) {
+    return new Date(Date.now() + meta.maxAgeSeconds * 1000).toISOString();
+  }
+  if (meta.expires) {
+    return new Date(meta.expires).toISOString();
+  }
+  return undefined;
 }
 
 export async function login(username: string, password: string): Promise<LoginResult> {
@@ -137,6 +148,21 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   }
 
   const res = await fetch(apiPath(path), { ...init, headers });
+
+  // If the server refreshed the session (e.g. a rolling/sliding-expiration cookie), persist the
+  // updated cookie + expiry locally so the stored session keeps extending itself as long as the
+  // CLI (or an agent using it) keeps being used, without ever needing the password again.
+  const setCookie = typeof res.headers.getSetCookie === "function" ? res.headers.getSetCookie() : [];
+  const refreshedCookie = extractSessionCookie(setCookie);
+  if (refreshedCookie && refreshedCookie !== session.cookie) {
+    const meta = extractCookieMeta(setCookie);
+    saveSession({
+      ...session,
+      cookie: refreshedCookie,
+      expiresAt: computeExpiresAt(meta) ?? session.expiresAt,
+      hasExplicitExpiry: meta.hasExplicitExpiry || session.hasExplicitExpiry,
+    });
+  }
 
   if (res.status === 401) {
     throw new NotAuthenticatedError();

@@ -19,6 +19,8 @@ export interface CookieMeta {
     expires?: string;
     hasExplicitExpiry: boolean;
 }
+/** Computes an absolute ISO expiry timestamp from a login/refresh response's cookie attributes. */
+export declare function computeExpiresAt(meta: CookieMeta): string | undefined;
 export declare function login(username: string, password: string): Promise<LoginResult>;
 /** Performs an authenticated request against the TLR Coworking member portal API. */
 export declare function apiFetch(path: string, init?: RequestInit): Promise<Response>;

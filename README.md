@@ -66,6 +66,14 @@ echoed to the terminal or kept in shell history), sends them once to TLR Coworki
 endpoint, and then stores **only the resulting session cookie** — never your password — securely
 in your OS keychain (see [SECURITY.md](./SECURITY.md)).
 
+The session cookie is valid for 7 days from login (`Max-Age=604800`), and every authenticated
+request automatically persists any refreshed cookie the server sends back — so as long as you
+(or an agent, e.g. via the [`/carmen-plz` skill](./skill)) use the CLI at least once within that
+window, the session keeps extending itself and you never need to type your password again.
+`tlr whoami` shows exactly when the current session expires, and warns if it's expiring soon.
+If it does expire, just run `tlr login` again — this is a deliberate trade-off: the CLI never
+stores your password, only ever a session cookie.
+
 ## Commands (v1)
 
 | Command | Description |

@@ -35,6 +35,9 @@ tlr whoami --json
 - If this fails with a "Not logged in" error, tell the user to run `tlr login` themselves in
   their own terminal (this requires typing a password interactively — **never** ask the user to
   paste their password into the chat, and never attempt to run `tlr login` for them).
+- If it succeeds but the JSON has `"expiresSoon": true`, mention to the user that their session
+  is about to expire and suggest they run `tlr login` again soon to avoid interruptions — but
+  still proceed with their request now, since the session is still valid.
 
 ## What the user typed after /carmen-plz
 

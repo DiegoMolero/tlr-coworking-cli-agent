@@ -1,5 +1,5 @@
 import prompts from "prompts";
-import { login as apiLogin, ApiError } from "../lib/api-client.js";
+import { login as apiLogin, computeExpiresAt, ApiError } from "../lib/api-client.js";
 import { saveSession } from "../lib/auth-store.js";
 import { printError } from "../lib/format.js";
 export async function loginCommand(opts) {
@@ -15,11 +15,7 @@ export async function loginCommand(opts) {
     try {
         const result = await apiLogin(answers.username, answers.password);
         const savedAt = new Date().toISOString();
-        const expiresAt = result.cookieMeta.maxAgeSeconds
-            ? new Date(Date.now() + result.cookieMeta.maxAgeSeconds * 1000).toISOString()
-            : result.cookieMeta.expires
-                ? new Date(result.cookieMeta.expires).toISOString()
-                : undefined;
+        const expiresAt = computeExpiresAt(result.cookieMeta);
         saveSession({
             cookie: result.cookie,
             displayName: result.displayName,

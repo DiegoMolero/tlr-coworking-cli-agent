@@ -1,11 +1,13 @@
-import { test, mock, beforeEach, afterEach } from "node:test";
+import { test, mock, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { login, ApiError } from "./api-client.js";
+import { login, apiFetch, computeExpiresAt, ApiError } from "./api-client.js";
+import { saveSession, loadSession, clearSession } from "./auth-store.js";
 
 const originalFetch = globalThis.fetch;
 
 afterEach(() => {
   globalThis.fetch = originalFetch;
+  clearSession();
 });
 
 test("login() returns cookie, displayName and memberId on success", async () => {
@@ -52,4 +54,35 @@ test("login() throws ApiError on 401", async () => {
       return true;
     }
   );
+});
+
+test("computeExpiresAt() derives an absolute expiry from Max-Age", () => {
+  const before = Date.now();
+  const iso = computeExpiresAt({ maxAgeSeconds: 3600, hasExplicitExpiry: true });
+  assert.ok(iso);
+  const delta = new Date(iso as string).getTime() - before;
+  assert.ok(delta > 3500_000 && delta <= 3600_000 + 5000, `unexpected delta: ${delta}`);
+});
+
+test("computeExpiresAt() returns undefined when there is no explicit expiry", () => {
+  assert.equal(computeExpiresAt({ hasExplicitExpiry: false }), undefined);
+});
+
+test("apiFetch() persists a refreshed session cookie/expiry (rolling session support)", async () => {
+  saveSession({ cookie: "connect.sid=old-value", savedAt: new Date().toISOString() });
+
+  globalThis.fetch = (async () =>
+    new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Set-Cookie": "connect.sid=new-refreshed-value; Path=/; HttpOnly; Max-Age=604800",
+      },
+    })) as unknown as typeof fetch;
+
+  await apiFetch("/user/whatever");
+
+  const updated = loadSession();
+  assert.equal(updated?.cookie, "connect.sid=new-refreshed-value");
+  assert.ok(updated?.expiresAt, "expected expiresAt to be set from the refreshed cookie");
 });
