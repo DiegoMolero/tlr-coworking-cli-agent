@@ -7,7 +7,8 @@ description: Book, check availability for, list, or cancel desk/room reservation
 
 This skill lets you book desks/rooms at **TLR Coworking (Málaga)** on behalf of the user, by
 calling the `tlr` command line tool that must already be installed and logged in on the user's
-machine (`npm install -g github:DiegoMolero/tlr-coworking-cli-agent`, then `tlr login`). This
+machine (see the [main README](../README.md) for install instructions: clone the repo and run
+`npm install -g .`, then `tlr login`). This
 skill never talks to the TLR Coworking API directly — it only shells out to `tlr` and parses its
 JSON output.
 
@@ -23,8 +24,8 @@ command -v tlr
 ```
 
 - If it is **not found**, do not attempt to install it yourself. Tell the user they need to
-  install it first, and suggest:
-  `npm install -g github:DiegoMolero/tlr-coworking-cli-agent`. Stop here until they confirm it's
+  install it first by cloning the repo and running `npm install -g .` (see the project README:
+  https://github.com/DiegoMolero/tlr-coworking-cli-agent). Stop here until they confirm it's
   installed.
 - If it **is** found, verify the user is logged in:
 

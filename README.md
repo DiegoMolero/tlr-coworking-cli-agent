@@ -12,7 +12,7 @@ Unofficial, community CLI + Claude/Copilot skill to book desks and rooms at
 
 ## What's in this repo
 
-- **The `tlr` CLI** (this package, at the repo root) — install it directly from GitHub, no npm
+- **The `tlr` CLI** (this package, at the repo root) — install it by cloning this repo, no npm
   registry required.
 - **[`skill/`](./skill)** — a Claude/Copilot Skill that teaches an AI agent to use the installed
   `tlr` CLI (via its `--json` output) to check availability, book, list and cancel desks/rooms
@@ -21,16 +21,21 @@ Unofficial, community CLI + Claude/Copilot skill to book desks and rooms at
 
 ## Install the CLI
 
-Install straight from GitHub with npm (no publishing to the npm registry needed):
+`npm install -g github:...` can unreliably fail on some npm versions due to a known npm
+limitation with global installs of git dependencies (it can leave a dangling symlink to a
+temporary clone directory that npm itself cleans up right after installing). The reliable way to
+install is to clone the repo and install it globally from the local checkout:
 
 ```bash
-npm install -g github:DiegoMolero/tlr-coworking-cli-agent
+git clone https://github.com/DiegoMolero/tlr-coworking-cli-agent.git
+cd tlr-coworking-cli-agent
+npm install -g .
 ```
 
-This clones the repo and links the pre-built `tlr` command globally (the compiled `dist/` folder
-is committed to this repo specifically so a git-based install works without needing to run a
-build step, since `npm`'s `prepare` lifecycle for git dependencies is unreliable for TypeScript
-toolchains).
+This links the pre-built `tlr` command globally (the compiled `dist/` folder is committed to
+this repo specifically so no build step is required at install time).
+
+To update later, `cd` back into the cloned repo, `git pull`, and re-run `npm install -g .`.
 
 Then log in and try it out:
 
@@ -98,6 +103,6 @@ fake/anonymized fixtures — no real credentials are required to run the test su
 [SECURITY.md](./SECURITY.md) for more details.
 
 **Important**: the compiled `dist/` folder is committed to this repository on purpose, so that
-`npm install -g github:DiegoMolero/tlr-coworking-cli-agent` works without a build step. If you
-change anything under `src/`, run `npm run build` and commit the updated `dist/` output together
-with your source change.
+`npm install -g .` works right after cloning, without a separate build step. If you change
+anything under `src/`, run `npm run build` and commit the updated `dist/` output together with
+your source change.
