@@ -9,6 +9,7 @@ A [Claude/Copilot Skill](../README.md) that teaches an AI agent to book desks/ro
   ```bash
   git clone https://github.com/DiegoMolero/tlr-coworking-cli-agent.git
   cd tlr-coworking-cli-agent
+  npm install
   npm install -g .
   ```
 - You must have already run `tlr login` yourself in a terminal — the skill will never ask for

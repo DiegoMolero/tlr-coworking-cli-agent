@@ -29,13 +29,15 @@ install is to clone the repo and install it globally from the local checkout:
 ```bash
 git clone https://github.com/DiegoMolero/tlr-coworking-cli-agent.git
 cd tlr-coworking-cli-agent
+npm install
 npm install -g .
 ```
 
 This links the pre-built `tlr` command globally (the compiled `dist/` folder is committed to
 this repo specifically so no build step is required at install time).
 
-To update later, `cd` back into the cloned repo, `git pull`, and re-run `npm install -g .`.
+To update later, `cd` back into the cloned repo, `git pull`, and re-run `npm install && npm
+install -g .`.
 
 Then log in and try it out:
 

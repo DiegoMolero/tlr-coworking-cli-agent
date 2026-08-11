@@ -24,9 +24,9 @@ command -v tlr
 ```
 
 - If it is **not found**, do not attempt to install it yourself. Tell the user they need to
-  install it first by cloning the repo and running `npm install -g .` (see the project README:
-  https://github.com/DiegoMolero/tlr-coworking-cli-agent). Stop here until they confirm it's
-  installed.
+  install it first by cloning the repo and running `npm install && npm install -g .` (see the
+  project README: https://github.com/DiegoMolero/tlr-coworking-cli-agent). Stop here until they
+  confirm it's installed.
 - If it **is** found, verify the user is logged in:
 
 ```bash
