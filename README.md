@@ -93,10 +93,15 @@ Once the CLI is installed (see above) and you're logged in (`tlr login`), instal
 tlr skill install
 ```
 
-This copies the skill into `~/.claude/skills/carmen-plz` (use `--project` to install it only for
-the current project, or `--force` to overwrite an existing copy). Restart Claude Code and either
-invoke it directly with `/carmen-plz` or just ask naturally, e.g. "book me a desk at TLR
-Coworking tomorrow 9 to 13" — Claude loads the skill automatically when relevant.
+This installs two things (use `--project` to install into the current project instead of your
+home directory, or `--force` to overwrite an existing copy):
+
+- A **skill** at `~/.claude/skills/carmen-plz`, which Claude loads automatically when relevant
+  (e.g. if you just ask "book me a desk at TLR Coworking tomorrow 9 to 13").
+- An explicit **slash command** at `~/.claude/commands/carmen-plz.md`, so `/carmen-plz` always
+  works as a direct command too.
+
+Restart Claude Code afterwards and try `/carmen-plz`.
 
 Prefer not to clone the repo first? You can install the CLI **and** the skill in one shot with
 `npx`:

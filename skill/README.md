@@ -25,8 +25,11 @@ The easiest way, once `tlr` is installed:
 tlr skill install
 ```
 
-This copies `carmen-plz/` into `~/.claude/skills/carmen-plz` (pass `--project` to install it only
-for the current project, or `--force` to overwrite an existing copy).
+This copies `carmen-plz/` into `~/.claude/skills/carmen-plz` (the auto-invoked skill) **and**
+`carmen-plz/command.md` into `~/.claude/commands/carmen-plz.md` (an explicit `/carmen-plz` slash
+command that always works, even without Claude deciding to auto-invoke the skill). Pass
+`--project` to install into the current project instead, or `--force` to overwrite an existing
+copy.
 
 Prefer to do it in one line without cloning first?
 
